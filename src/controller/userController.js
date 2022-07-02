@@ -1,42 +1,49 @@
 const usermodel = require("../models/usermodel")
+const { isvalid, isvalidbody, isvalidnumber } = require("./validator")
 
-const isvalid = function (x) {
-    if (typeof x === "undefined" || typeof x === null) return false
-    if (typeof x === "string" && x.trim().length === 0) return false
-    return true
-}
 
-const isvalidbody = function (x) {
-    return Object.keys(x).length > 0
-}
+
 
 const createuser = async function (req, res) {
     try {
         let data = req.body
-        if(!isvalidbody(data)){
+        if (!isvalidbody(data)) {
             return res.status(400).send({ status: false, message: "data not found,plz enter req details" })
         }
         let { title, name, phone, email, password, address } = data
-        
-        
-        if(isvalidbody(address)){
-            let {street,city,pincode}=address
-            if(!/^(?:[a-zA-Z])+$/.test(city)){
-                return res.status(400).send({ status: false, message: "plz enter street with only alphabet" })
-            }
 
-            if (!isvalid(city)) {
+
+        if (isvalidbody(address)) {
+            let { street, city, pincode } = address
+
+        
+
+           if (!isvalid(city)) {
                 return res.status(400).send({ status: false, message: "plz enter city" })
-             }
-             if (!isvalid(street)) {
+            }
+            if (!isvalid(street)) {
                 return res.status(400).send({ status: false, message: "plz enter address" })
-             }
-             if (!isvalid(pincode)) {
+            }
+            if (!isvalid(pincode)) {
                 return res.status(400).send({ status: false, message: "plz enter address" })
-             }
-    
-
+            }
+            if(!/^[1-9][0-9]{5}$/.test(pincode)){
+                return res.status(400).send({ status: false, message: "plz enter pincode in right format" }) 
+            }
         }
+
+
+
+        if (!isvalid(email)) {
+            return res.status(400).send({ status: false, message: "plz enter email" })
+        }
+        if (!isvalid(password)) {
+            return res.status(400).send({ status: false, message: "plz enter password" })
+        }
+     
+
+
+
 
         if (!isvalid(title)) {
             return res.status(400).send({ status: false, message: "plz enter title" })
@@ -44,19 +51,26 @@ const createuser = async function (req, res) {
         if (!isvalid(name)) {
             return res.status(400).send({ status: false, message: "plz enter name" })
         }
-        if (!isvalid(phone)) {
-           return res.status(400).send({ status: false, message: "plz enter phone" })
+        if (!isvalid(phone)|| !isvalidnumber(phone)) {
+            return res.status(400).send({ status: false, message: "plz enter phone" })
         }
-        if (!isvalid(email)) {
-           return res.status(400).send({ status: false, message: "plz enter email" })
+     
+
+           // checking validation of email and password
+           if (!/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/.test(email)) {
+            return res.status(400).send({ status: false, message: "plz enter email in right format" })
         }
-        if (!isvalid(password)) {
-            return res.status(400).send({ status: false, message: "plz enter password" })
-         }
-        
-         
-        
-         
+
+        if (!/^[a-zA-Z0-9!@#$%^&*]{8,15}$/.test(password)) {
+            return res.status(400).send({ status: false, message: "plz enter valid password with atleast one uppercase and one lowercase and one charecter and one number" })
+        }
+        if(!/^(?:(?:\+|0{0,2})91(\s*|[\-])?|[0]?)?([6789]\d{2}([ -]?)\d{3}([ -]?)\d{4})$/.test(phone)){
+            return res.status(400).send({ status: false, message: "plz enter phone in right format" })  
+        }
+
+
+
+
         const user = await usermodel.create(data)
 
 

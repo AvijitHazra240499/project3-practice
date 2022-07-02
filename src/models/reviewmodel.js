@@ -1,5 +1,5 @@
 const mongoose=require("mongoose")
-const ObjectId=mongoose.schema.Types.ObjectId
+const ObjectId=mongoose.Schema.Types.ObjectId
 
 const reviewschema=new mongoose.Schema({
     bookId: {type:ObjectId, 
