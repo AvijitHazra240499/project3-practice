@@ -14,13 +14,13 @@ const reviewschema=new mongoose.Schema({
         type:Date,
         required:true 
     },
-    rating: {type:number, 
+    rating: {type:Number, 
         min: 1, max: 5, 
         trim:true},
     review: {type:String,
          trim:true
         },
-    isDeleted: {type:boolean,
+    isDeleted: {type:Boolean,
          default: false,
          trim:true},
 },{timestamp:true})
