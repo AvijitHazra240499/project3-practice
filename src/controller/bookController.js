@@ -188,11 +188,11 @@ const deletebook=async function(req,res){
         if (!mongoose.isValidObjectId(idparams)) {
             return res.status(400).send({ status: false, message: "Id is not valid" })
         }
-        let deletedbook=await Bookmodel.updateMany({_id:idparams,isDeleted:false},{isDeleted:true,deletedAt:new Date()})
-        if(!deletedbook.matchedCount){
+        let deletedbook=await Bookmodel.findOneAndUpdate({_id:idparams,isDeleted:false},{isDeleted:true,deletedAt:new Date()},{new:true})
+        if(!deletedbook){
             return res.status(404).send({ status: false, message: "no book found" })
         }
-        return res.status(200).send({ status: true})
+        return res.status(200).send({ status: true,data:deletedbook})
 
     }catch(err){
         return res.status(500).send({ status: false, message: err.message })

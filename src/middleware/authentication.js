@@ -38,20 +38,35 @@ const authorisation=async(req,res,next)=>{
      const bookId=req.params.bookId
      //for createuser we are taking userId from body
      const userId=req.body.userId
-     if (!mongoose.isValidObjectId(bookId)) {
-        return res.status(400).send({ status: false, message: "Id is not valid" })
-    }
+     
+     if(bookId){
+        if (!mongoose.isValidObjectId(bookId)) {
+            return res.status(400).send({ status: false, message: "bookId is not valid" })
+        }
+     }else{
+        if (!mongoose.isValidObjectId(userId)) {
+            return res.status(400).send({ status: false, message: "userId is not valid" })
+        }
+     }
+    
 
-     const getbooks=await Bookmodel.findOne({_id:bookId,userId:userId})
+     
      let decodetoken=jwt.verify(token,"This-is-a-secret-key")
      //authorizATION checking
-     if(getbooks.userId!=decodetoken.userId){
-        return res.status(403).send({ status: false, message: "authorisation failed"})
+    //  if(getbooks.userId!=decodetoken.userId){
+    //     return res.status(403).send({ status: false, message: "authorisation failed"})
+ //}
+ if(bookId){
+ const getbooks=await Bookmodel.findOne({_id:bookId,userId:decodetoken.userId})
+ if(!getbooks){
+    return res.status(403).send({ status: false, message: "authorisation not successfull"})
+ }
+}else{
+if(userId!=decodetoken.userId){
+    return res.status(403).send({ status: false, message: "authorisation not successfull by userId"})   
+}
+}
 
-     }
-     if(!decodetoken){
-       return res.status(403).send({ status: false, message: "authorisation not successfull"})
-     }
      next()
     }catch(err){
        return res.status(500).send({ status: false, message: err.message })

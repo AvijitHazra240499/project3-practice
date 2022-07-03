@@ -7,7 +7,7 @@ const{authentication,authorisation}=require("../middleware/authentication")
 
 router.post("/register",createuser)
 router.post("/books",authentication,authorisation,createbook)
-router.get("/books",authentication,authorisation,getBooks)
+router.get("/books",authentication,getBooks)
 router.post("/books/:bookId/review",authentication,authorisation,createreview)
 router.get("/books/:bookId",authentication,authorisation,getBooksById)
 router.put("/books/:bookId",authentication,authorisation,updatedetails)
