@@ -108,12 +108,24 @@ const getBooks = async function (req, res) {
 const getBooksById=async function(req,res){
     try{
         const bookId=req.params.bookId
+          
+      if (!mongoose.isValidObjectId(bookId)) {
+        return res.status(400).send({ status: false, message: "Id is not valid" })
+    }
 
-      let allbooks=await Bookmodel.findById(bookId).lean()
-      let review=await reviewmodel.find({bookId})
+      let allbooks=await Bookmodel.findOne({_id:bookId,isDeleated:false}).lean().select({__v:0})
+      if(!allbooks){
+        return res.status(400).send({ status: false, message: "books not found" })
+
+      }
+      let review=await reviewmodel.find({bookId:bookId,isDeleated:false}).select({createdAt:0,updateAt:0,__v:0})
+     
+
+    
       
     //   let r=await internModel.find({collegeId:collegeId},{_id:1,updatedAt:0,createdAt:0,isDeleted:0,__v:0,collegeId:0}).lean()
       allbooks.reviewsData=[...review]
+
       console.log(allbooks.reviewsData)
       console.log(allbooks)
      return res.status(200).send({ status: true,bookId:allbooks})
@@ -169,8 +181,26 @@ const updatedetails=async function(req,res){
     }
 }
 
+const deletebook=async function(req,res){
+    try{
+        let idparams=req.params.bookId
+        if (!mongoose.isValidObjectId(idparams)) {
+            return res.status(400).send({ status: false, message: "Id is not valid" })
+        }
+        let deletedbook=await Bookmodel.updateMany({_id:idparams,isDeleted:false},{isDeleted:true,deletedAt:new Date()})
+        if(!deletedbook.matchedCount){
+            return res.status(404).send({ status: false, message: "no book found" })
+        }
+        return res.status(200).send({ status: true})
+
+    }catch(err){
+        return res.status(500).send({ status: false, message: err.message })
+
+    }
+}
 
 
 
 
-module.exports = { createbook,getBooks,getBooksById,updatedetails }
+
+module.exports = { createbook,getBooks,getBooksById,updatedetails,deletebook}
