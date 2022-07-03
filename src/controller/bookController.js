@@ -80,8 +80,9 @@ const getBooks = async function (req, res) {
 
           
             //it's checking subcategory as a string
-         if (isvalidString(subcategory)) {
-            let a=subcategory.trim().split(",").map(x=> x.trim())
+            
+         if (isvalid(subcategory)) {
+            let a=subcategory.trim().split(",").map(x=>x.trim())
             console.log(a)
         obj.subcategory= {$all:a}
         }
